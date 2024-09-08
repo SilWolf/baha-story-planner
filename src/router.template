@@ -1,0 +1,7 @@
+import { createBrowserRouter } from "react-router-dom";
+
+%IMPORTS%
+
+const router = createBrowserRouter(%ROUTES%);
+
+export default router;
