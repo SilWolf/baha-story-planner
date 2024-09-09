@@ -12,6 +12,8 @@ export default function EditablePlugin({
     editor.setEditable(active);
     if (active) {
       setTimeout(() => editor.focus(), 0);
+    } else {
+      setTimeout(() => editor.blur(), 0);
     }
   }, [active, editor]);
 

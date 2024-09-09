@@ -15,17 +15,27 @@ function StoryLineTextareaCard({
   paragraph,
   selected,
   focused,
+  onArrowUp,
+  onArrowDown,
 }: {
   paragraph: StoryParagraph;
   selected: boolean;
   focused: boolean;
+  onArrowUp: (e: KeyboardEvent) => void;
+  onArrowDown: (e: KeyboardEvent) => void;
 }) {
   return (
     <div
       data-selected={selected}
-      className="px-2 py-1 rounded border-l-4 border-gray-700 bg-gray-100 hover:bg-gray-200 data-[selected=true]:!bg-green-100"
+      data-focused={focused}
+      className="px-2 py-1 rounded border-l-4 border-gray-700 bg-gray-100 hover:bg-gray-200 data-[selected=true]:!bg-green-100 data-[focused=true]:!ring-2 data-[focused=true]:!ring-primary"
     >
-      <BahaStoryParagraphEditor id={paragraph.id} active={focused} />
+      <BahaStoryParagraphEditor
+        id={paragraph.id}
+        active={focused}
+        onArrowUp={onArrowUp}
+        onArrowDown={onArrowDown}
+      />
     </div>
   );
 }
@@ -58,27 +68,42 @@ export default function StoriesByIdPage() {
   );
 
   const handlePressModEnter = useCallback(() => {
-    createNewParagraph(currentIndex, { id: generateId(), lexicalString: "" });
+    createNewParagraph(currentIndex + 1, {
+      id: generateId(),
+      lexicalString: "",
+    });
     inc(1, true);
     setFocusOnSelected(true);
   }, [createNewParagraph, currentIndex, inc, setFocusOnSelected]);
   useKeyboardEffect("mod+enter", handlePressModEnter);
 
-  const handlePressModUp = useCallback(() => {
-    dec();
-    setFocusOnSelected(false);
-  }, [dec, setFocusOnSelected]);
+  const handlePressModUp = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      dec();
+      setFocusOnSelected(false);
+    },
+    [dec, setFocusOnSelected]
+  );
   useKeyboardEffect("mod+up", handlePressModUp);
 
-  const handlePressModDown = useCallback(() => {
-    inc();
-    setFocusOnSelected(false);
-  }, [inc, setFocusOnSelected]);
+  const handlePressModDown = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      inc();
+      setFocusOnSelected(false);
+    },
+    [inc, setFocusOnSelected]
+  );
   useKeyboardEffect("mod+down", handlePressModDown);
 
-  const handlePressEnter = useCallback(() => {
-    setFocusOnSelected(true);
-  }, [setFocusOnSelected]);
+  const handlePressEnter = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      setFocusOnSelected(true);
+    },
+    [setFocusOnSelected]
+  );
   useKeyboardEffect("enter", handlePressEnter);
 
   return (
@@ -96,6 +121,8 @@ export default function StoriesByIdPage() {
               paragraph={paragraph}
               selected={currentIndex === index}
               focused={currentIndex === index && isFocusOnSelected}
+              onArrowUp={handlePressModUp}
+              onArrowDown={handlePressModDown}
             />
           </div>
         ))}

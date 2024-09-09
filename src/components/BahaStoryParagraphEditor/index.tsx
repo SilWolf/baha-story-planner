@@ -13,6 +13,7 @@ import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import styles from "./index.module.css";
 import { MentionNode } from "./nodes/MentionNode";
 import EditablePlugin from "./plugins/EditablePlugin";
+import KeyboardControlPlugin from "./plugins/KeyboardControlPlugin";
 import MentionPlugin from "./plugins/MentionPlugin";
 // import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
@@ -34,9 +35,13 @@ function onError(error: any) {
 export default function BahaStoryParagraphEditor({
   id,
   active,
+  onArrowUp,
+  onArrowDown,
 }: {
   id: string;
   active?: boolean;
+  onArrowUp?: (e: KeyboardEvent) => void;
+  onArrowDown?: (e: KeyboardEvent) => void;
 }) {
   const initialConfig: InitialConfigType = {
     namespace: id,
@@ -69,6 +74,10 @@ export default function BahaStoryParagraphEditor({
         <HashtagPlugin />
         <MentionPlugin />
         <EditablePlugin active={active} />
+        <KeyboardControlPlugin
+          onArrowUp={onArrowUp}
+          onArrowDown={onArrowDown}
+        />
 
         {/* <TreeViewPlugin /> */}
       </div>
