@@ -13,7 +13,7 @@ import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import styles from "./index.module.css";
 import { MentionNode } from "./nodes/MentionNode";
 import EditablePlugin from "./plugins/EditablePlugin";
-import KeyboardControlPlugin from "./plugins/KeyboardControlPlugin";
+import ControlAndWorkflowPlugin from "./plugins/ControlAndWorkflowPlugin";
 import MentionPlugin from "./plugins/MentionPlugin";
 import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
@@ -35,17 +35,21 @@ function onError(error: any) {
 export default function BahaStoryParagraphEditor({
   id,
   active,
+  value,
   onPressArrowUp,
   onPressArrowDown,
   onPressEsc,
   onPressEnter,
+  onBlur,
 }: {
   id: string;
   active?: boolean;
+  value?: string;
   onPressArrowUp?: (e: KeyboardEvent) => void;
   onPressArrowDown?: (e: KeyboardEvent) => void;
   onPressEsc?: (e: KeyboardEvent) => void;
   onPressEnter?: (e: KeyboardEvent) => void;
+  onBlur?: (value: string) => void;
 }) {
   const initialConfig: InitialConfigType = {
     namespace: id,
@@ -78,11 +82,13 @@ export default function BahaStoryParagraphEditor({
         <HashtagPlugin />
         <MentionPlugin />
         <EditablePlugin active={active} />
-        <KeyboardControlPlugin
+        <ControlAndWorkflowPlugin
           onPressArrowUp={onPressArrowUp}
           onPressArrowDown={onPressArrowDown}
           onPressEsc={onPressEsc}
           onPressEnter={onPressEnter}
+          onBlur={onBlur}
+          value={value}
         />
 
         {/* <TreeViewPlugin /> */}

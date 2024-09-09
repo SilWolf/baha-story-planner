@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback } from "react";
+import { MouseEvent, useCallback, useEffect } from "react";
 import { Button, Card } from "react-daisyui";
 import { useBoolean, useList } from "react-use";
 
@@ -26,6 +26,7 @@ function StoryLineTextareaCard({
   onPressArrowDown,
   onPressEsc,
   onPressEnter,
+  onEditorBlur,
 }: {
   paragraph: StoryParagraph;
   selected: boolean;
@@ -34,7 +35,15 @@ function StoryLineTextareaCard({
   onPressArrowDown: (e: KeyboardEvent) => void;
   onPressEsc: (e: KeyboardEvent) => void;
   onPressEnter: (e: KeyboardEvent) => void;
+  onEditorBlur: (id: string, value: string) => void;
 }) {
+  const handleBlur = useCallback(
+    (value: string) => {
+      onEditorBlur(paragraph.id, value);
+    },
+    [onEditorBlur, paragraph.id]
+  );
+
   return (
     <div
       id={paragraph.id}
@@ -45,22 +54,26 @@ function StoryLineTextareaCard({
       <BahaStoryParagraphEditor
         id={paragraph.id}
         active={focused}
+        value={paragraph.lexicalString}
         onPressArrowUp={onPressArrowUp}
         onPressArrowDown={onPressArrowDown}
         onPressEsc={onPressEsc}
         onPressEnter={onPressEnter}
+        onBlur={handleBlur}
       />
     </div>
   );
 }
 
 export default function StoriesByIdPage() {
-  const [paragraphs, { insertAt: createNewParagraph }] =
-    useList<StoryParagraph>(
-      JSON.parse(sessionStorage.getItem("cached-paragraphs") ?? "[]")
-    );
+  const [
+    paragraphs,
+    { insertAt: createNewParagraph, updateAt: updateParagraph },
+  ] = useList<StoryParagraph>(
+    JSON.parse(sessionStorage.getItem("cached-paragraphs") ?? "[]")
+  );
   const [currentIndex, { inc, dec, set }] = useEnhancedCounter(
-    0,
+    paragraphs.length - 1,
     paragraphs.length - 1,
     0
   );
@@ -170,6 +183,24 @@ export default function StoriesByIdPage() {
   );
   useKeyboardEffect("enter", handlePressEnter);
 
+  const handleEditorBlur = useCallback(
+    (paragraphId: string, value: string) => {
+      const index = paragraphs.findIndex((item) => item.id === paragraphId);
+      if (index === -1) {
+        return;
+      }
+
+      if (value !== paragraphs[index].lexicalString) {
+        updateParagraph(index, { ...paragraphs[index], lexicalString: value });
+      }
+    },
+    [paragraphs, updateParagraph]
+  );
+
+  useEffect(() => {
+    sessionStorage.setItem("cached-paragraphs", JSON.stringify(paragraphs));
+  }, [paragraphs]);
+
   return (
     <div className="container max-w-screen-lg mx-auto">
       <div className="relative grid grid-cols-3 gap-4">
@@ -211,6 +242,7 @@ export default function StoriesByIdPage() {
                     onPressArrowDown={handlePressRightOrModDown}
                     onPressEsc={handlePressEsc}
                     onPressEnter={handlePressModEnter}
+                    onEditorBlur={handleEditorBlur}
                   />
                 </div>
               </div>

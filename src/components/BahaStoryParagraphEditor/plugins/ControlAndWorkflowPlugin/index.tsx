@@ -3,6 +3,8 @@ import {
   $getRoot,
   $getSelection,
   $isElementNode,
+  BLUR_COMMAND,
+  COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_LOW,
   KEY_ENTER_COMMAND,
   KEY_ESCAPE_COMMAND,
@@ -27,16 +29,20 @@ function isAtNodeEnd(point: Point): boolean {
   return false;
 }
 
-export default function KeyboardControlPlugin({
+export default function ControlAndWorkflowPlugin({
   onPressEsc,
   onPressArrowUp,
   onPressArrowDown,
   onPressEnter,
+  onBlur,
+  value,
 }: {
   onPressEsc?: (e: KeyboardEvent) => void;
   onPressArrowUp?: (e: KeyboardEvent) => void;
   onPressArrowDown?: (e: KeyboardEvent) => void;
   onPressEnter?: (e: KeyboardEvent) => void;
+  onBlur?: (value: string) => void;
+  value?: string;
 }) {
   const [editor] = useLexicalComposerContext();
 
@@ -227,6 +233,27 @@ export default function KeyboardControlPlugin({
       COMMAND_PRIORITY_LOW
     );
   }, [editor, onPressEnter]);
+
+  useEffect(() => {
+    if (!onBlur) {
+      return;
+    }
+    return editor.registerCommand(
+      BLUR_COMMAND,
+      () => {
+        onBlur(JSON.stringify(editor.getEditorState().toJSON()));
+
+        return false;
+      },
+      COMMAND_PRIORITY_EDITOR
+    );
+  }, [editor, onBlur]);
+
+  useEffect(() => {
+    if (value) {
+      editor.setEditorState(editor.parseEditorState(value));
+    }
+  }, [editor, value]);
 
   return null;
 }
