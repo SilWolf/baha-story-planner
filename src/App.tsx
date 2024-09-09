@@ -1,4 +1,3 @@
-import { Button } from "@material-tailwind/react";
 import { useState } from "react";
 
 import viteLogo from "/vite.svg";
@@ -30,7 +29,7 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
-      <Button>ABC</Button>
+      <button>ABC</button>
     </>
   );
 }
