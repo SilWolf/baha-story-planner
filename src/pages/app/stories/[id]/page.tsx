@@ -1,4 +1,5 @@
 import { MouseEvent, useCallback } from "react";
+import { Button, Card } from "react-daisyui";
 import { useBoolean, useList } from "react-use";
 
 import BahaStoryParagraphEditor from "@/components/BahaStoryParagraphEditor";
@@ -39,7 +40,7 @@ function StoryLineTextareaCard({
       id={paragraph.id}
       data-selected={selected}
       data-focused={focused}
-      className="px-2 py-1 rounded border-l-4 border-gray-700 bg-gray-100 hover:bg-gray-200 data-[selected=true]:!bg-green-100 data-[focused=true]:!ring-2 data-[focused=true]:!ring-primary"
+      className="px-2 py-1 rounded border-l-4 border-transparent bg-gray-100 hover:bg-gray-200 data-[selected=true]:!bg-base-200 data-[focused=true]:!border-primary"
     >
       <BahaStoryParagraphEditor
         id={paragraph.id}
@@ -95,7 +96,7 @@ export default function StoriesByIdPage() {
   }, [createNewParagraph, currentIndex, inc, setFocusOnSelected]);
   useKeyboardEffect("mod+enter", handlePressModEnter);
 
-  const handlePressModUp = useCallback(
+  const handlePressRightOrModUp = useCallback(
     (e: KeyboardEvent) => {
       e.preventDefault();
       const newIndex = dec();
@@ -107,9 +108,9 @@ export default function StoriesByIdPage() {
     },
     [dec, paragraphs, setFocusOnSelected]
   );
-  useKeyboardEffect("mod+up", handlePressModUp);
+  useKeyboardEffect(["up", "mod+up"], handlePressRightOrModUp);
 
-  const handlePressModLeft = useCallback(
+  const handlePressRightOrModLeft = useCallback(
     (e: KeyboardEvent) => {
       e.preventDefault();
       const newIndex = dec(10);
@@ -121,9 +122,9 @@ export default function StoriesByIdPage() {
     },
     [dec, paragraphs, setFocusOnSelected]
   );
-  useKeyboardEffect("mod+left", handlePressModLeft);
+  useKeyboardEffect(["left", "mod+left"], handlePressRightOrModLeft);
 
-  const handlePressModDown = useCallback(
+  const handlePressRightOrModDown = useCallback(
     (e: KeyboardEvent) => {
       e.preventDefault();
       const newIndex = inc();
@@ -135,9 +136,9 @@ export default function StoriesByIdPage() {
     },
     [inc, paragraphs, setFocusOnSelected]
   );
-  useKeyboardEffect("mod+down", handlePressModDown);
+  useKeyboardEffect(["down", "mod+down"], handlePressRightOrModDown);
 
-  const handlePressModRight = useCallback(
+  const handlePressRightOrModRight = useCallback(
     (e: KeyboardEvent) => {
       e.preventDefault();
       const newIndex = inc(10);
@@ -149,7 +150,7 @@ export default function StoriesByIdPage() {
     },
     [inc, paragraphs, setFocusOnSelected]
   );
-  useKeyboardEffect("mod+right", handlePressModRight);
+  useKeyboardEffect(["right", "mod+right"], handlePressRightOrModRight);
 
   const handlePressEsc = useCallback(
     (e: KeyboardEvent) => {
@@ -170,27 +171,57 @@ export default function StoriesByIdPage() {
   useKeyboardEffect("enter", handlePressEnter);
 
   return (
-    <div className="container mx-auto">
-      <p>currentIndex: {currentIndex}</p>
-      <div className="space-y-2">
-        {paragraphs.map((paragraph, index) => (
-          <div
-            key={paragraph.id}
-            data-index={index}
-            onClick={handleClickParagraph}
-          >
-            #{index}
-            <StoryLineTextareaCard
-              paragraph={paragraph}
-              selected={currentIndex === index}
-              focused={currentIndex === index && isFocusOnSelected}
-              onPressArrowUp={handlePressModUp}
-              onPressArrowDown={handlePressModDown}
-              onPressEsc={handlePressEsc}
-              onPressEnter={handlePressModEnter}
-            />
+    <div className="container max-w-screen-lg mx-auto">
+      <div className="relative grid grid-cols-3 gap-4">
+        <div className="relative">
+          <div className="sticky top-16">
+            <Card className="bg-secondary">
+              <Card.Body>
+                <p>
+                  <strong>總段落數：</strong>
+                  {paragraphs.length}
+                </p>
+                <Card.Actions>
+                  <Button fullWidth color="primary">
+                    存檔
+                  </Button>
+                </Card.Actions>
+              </Card.Body>
+            </Card>
           </div>
-        ))}
+        </div>
+        <div className="col-span-2">
+          <div className="space-y-2">
+            {paragraphs.map((paragraph, index) => (
+              <div
+                key={paragraph.id}
+                data-index={index}
+                onClick={handleClickParagraph}
+                className="flex gap-x-2 animate-fade"
+              >
+                <span className="flex-shrink-0 mt-1 min-w-[40px]">
+                  #{index + 1}
+                </span>
+                <div className="flex-1">
+                  <StoryLineTextareaCard
+                    paragraph={paragraph}
+                    selected={currentIndex === index}
+                    focused={currentIndex === index && isFocusOnSelected}
+                    onPressArrowUp={handlePressRightOrModUp}
+                    onPressArrowDown={handlePressRightOrModDown}
+                    onPressEsc={handlePressEsc}
+                    onPressEnter={handlePressModEnter}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          {paragraphs.length === 0 && (
+            <div className="bg-neutral text-base-100 p-12 text-center">
+              按 Ctrl + Enter 來新增第一段段落。
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -7,10 +7,23 @@ module.exports = {
     "node_modules/react-daisyui/dist/**/*.js",
   ],
   theme: {
-    extend: {},
+    extend: {
+      // that is animation class
+      animation: {
+        fade: "fadeOut 0.5s ease-in-out",
+      },
+
+      // that is actual animation
+      keyframes: () => ({
+        fadeOut: {
+          "0%": { opacity: 0, transform: "translateY(-50px)" },
+          "100%": { opacity: 1, transform: "translateY(0px)" },
+        },
+      }),
+    },
   },
   plugins: [require("@tailwindcss/typography"), require("daisyui")],
   daisyui: {
-    themes: ["light", "dark", "cupcake"],
+    themes: ["light", "dark", "autumn"],
   },
 };

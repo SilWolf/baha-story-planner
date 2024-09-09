@@ -17,7 +17,7 @@ import KeyboardControlPlugin from "./plugins/KeyboardControlPlugin";
 import MentionPlugin from "./plugins/MentionPlugin";
 import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
-const placeholder = "Enter some rich text...";
+const placeholder = "輸入內容…";
 
 const theme = {
   // Theme styling goes here
