@@ -71,10 +71,8 @@ export default function useEnhancedCounter(
           const rDelta = resolveHookState(delta, get());
 
           if (typeof rDelta !== "number") {
-            console.error(
-              "delta has to be a number or function returning a number, got " +
-                typeof rDelta
-            );
+            set((num: number) => num + 1, force);
+            return;
           }
 
           set((num: number) => num + rDelta, force);
@@ -83,10 +81,8 @@ export default function useEnhancedCounter(
           const rDelta = resolveHookState(delta, get());
 
           if (typeof rDelta !== "number") {
-            console.error(
-              "delta has to be a number or function returning a number, got " +
-                typeof rDelta
-            );
+            set((num: number) => num - 1, force);
+            return;
           }
 
           set((num: number) => num - rDelta, force);

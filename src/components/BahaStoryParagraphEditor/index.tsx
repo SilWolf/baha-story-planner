@@ -12,6 +12,7 @@ import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 
 import styles from "./index.module.css";
 import { MentionNode } from "./nodes/MentionNode";
+import EditablePlugin from "./plugins/EditablePlugin";
 import MentionPlugin from "./plugins/MentionPlugin";
 // import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
@@ -31,16 +32,17 @@ function onError(error: any) {
 }
 
 export default function BahaStoryParagraphEditor({
+  id,
   active,
 }: {
+  id: string;
   active?: boolean;
 }) {
   const initialConfig: InitialConfigType = {
-    namespace: "MyEditor",
+    namespace: id,
     theme,
     nodes: [HashtagNode, MentionNode],
     onError,
-    editable: active,
   };
 
   return (
@@ -66,6 +68,7 @@ export default function BahaStoryParagraphEditor({
         <AutoFocusPlugin />
         <HashtagPlugin />
         <MentionPlugin />
+        <EditablePlugin active={active} />
 
         {/* <TreeViewPlugin /> */}
       </div>
