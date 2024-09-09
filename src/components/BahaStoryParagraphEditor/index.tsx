@@ -15,7 +15,7 @@ import { MentionNode } from "./nodes/MentionNode";
 import EditablePlugin from "./plugins/EditablePlugin";
 import KeyboardControlPlugin from "./plugins/KeyboardControlPlugin";
 import MentionPlugin from "./plugins/MentionPlugin";
-// import TreeViewPlugin from "./plugins/TreeViewPlugin";
+import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 const placeholder = "Enter some rich text...";
 
@@ -35,13 +35,17 @@ function onError(error: any) {
 export default function BahaStoryParagraphEditor({
   id,
   active,
-  onArrowUp,
-  onArrowDown,
+  onPressArrowUp,
+  onPressArrowDown,
+  onPressEsc,
+  onPressEnter,
 }: {
   id: string;
   active?: boolean;
-  onArrowUp?: (e: KeyboardEvent) => void;
-  onArrowDown?: (e: KeyboardEvent) => void;
+  onPressArrowUp?: (e: KeyboardEvent) => void;
+  onPressArrowDown?: (e: KeyboardEvent) => void;
+  onPressEsc?: (e: KeyboardEvent) => void;
+  onPressEnter?: (e: KeyboardEvent) => void;
 }) {
   const initialConfig: InitialConfigType = {
     namespace: id,
@@ -75,8 +79,10 @@ export default function BahaStoryParagraphEditor({
         <MentionPlugin />
         <EditablePlugin active={active} />
         <KeyboardControlPlugin
-          onArrowUp={onArrowUp}
-          onArrowDown={onArrowDown}
+          onPressArrowUp={onPressArrowUp}
+          onPressArrowDown={onPressArrowDown}
+          onPressEsc={onPressEsc}
+          onPressEnter={onPressEnter}
         />
 
         {/* <TreeViewPlugin /> */}

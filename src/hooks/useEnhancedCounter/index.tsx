@@ -62,6 +62,8 @@ export default function useEnhancedCounter(
             setInternal(rState);
           }
         }
+
+        return rState;
       };
 
       return {
@@ -71,21 +73,19 @@ export default function useEnhancedCounter(
           const rDelta = resolveHookState(delta, get());
 
           if (typeof rDelta !== "number") {
-            set((num: number) => num + 1, force);
-            return;
+            return set((num: number) => num + 1, force);
           }
 
-          set((num: number) => num + rDelta, force);
+          return set((num: number) => num + rDelta, force);
         },
         dec: (delta: IHookStateSetAction<number> = 1, force?: boolean) => {
           const rDelta = resolveHookState(delta, get());
 
           if (typeof rDelta !== "number") {
-            set((num: number) => num - 1, force);
-            return;
+            return set((num: number) => num - 1, force);
           }
 
-          set((num: number) => num - rDelta, force);
+          return set((num: number) => num - rDelta, force);
         },
         reset: (value: IHookStateSetAction<number> = init, force?: boolean) => {
           const rValue = resolveHookState(value, get());
@@ -99,7 +99,7 @@ export default function useEnhancedCounter(
 
           // eslint-disable-next-line react-hooks/exhaustive-deps
           init = rValue;
-          set(rValue, force);
+          return set(rValue, force);
         },
       };
     }, [init, min, max]),

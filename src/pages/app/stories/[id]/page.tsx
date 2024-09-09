@@ -11,21 +11,32 @@ type StoryParagraph = {
   lexicalString: string;
 };
 
+const scrollToParagraph = (id: string) => {
+  document
+    .getElementById(id)
+    ?.scrollIntoView({ behavior: "smooth", block: "center" });
+};
+
 function StoryLineTextareaCard({
   paragraph,
   selected,
   focused,
-  onArrowUp,
-  onArrowDown,
+  onPressArrowUp,
+  onPressArrowDown,
+  onPressEsc,
+  onPressEnter,
 }: {
   paragraph: StoryParagraph;
   selected: boolean;
   focused: boolean;
-  onArrowUp: (e: KeyboardEvent) => void;
-  onArrowDown: (e: KeyboardEvent) => void;
+  onPressArrowUp: (e: KeyboardEvent) => void;
+  onPressArrowDown: (e: KeyboardEvent) => void;
+  onPressEsc: (e: KeyboardEvent) => void;
+  onPressEnter: (e: KeyboardEvent) => void;
 }) {
   return (
     <div
+      id={paragraph.id}
       data-selected={selected}
       data-focused={focused}
       className="px-2 py-1 rounded border-l-4 border-gray-700 bg-gray-100 hover:bg-gray-200 data-[selected=true]:!bg-green-100 data-[focused=true]:!ring-2 data-[focused=true]:!ring-primary"
@@ -33,8 +44,10 @@ function StoryLineTextareaCard({
       <BahaStoryParagraphEditor
         id={paragraph.id}
         active={focused}
-        onArrowUp={onArrowUp}
-        onArrowDown={onArrowDown}
+        onPressArrowUp={onPressArrowUp}
+        onPressArrowDown={onPressArrowDown}
+        onPressEsc={onPressEsc}
+        onPressEnter={onPressEnter}
       />
     </div>
   );
@@ -68,34 +81,84 @@ export default function StoriesByIdPage() {
   );
 
   const handlePressModEnter = useCallback(() => {
+    const newId = generateId();
     createNewParagraph(currentIndex + 1, {
-      id: generateId(),
+      id: newId,
       lexicalString: "",
     });
     inc(1, true);
     setFocusOnSelected(true);
+
+    setTimeout(() => {
+      scrollToParagraph(newId);
+    }, 0);
   }, [createNewParagraph, currentIndex, inc, setFocusOnSelected]);
   useKeyboardEffect("mod+enter", handlePressModEnter);
 
   const handlePressModUp = useCallback(
     (e: KeyboardEvent) => {
       e.preventDefault();
-      dec();
+      const newIndex = dec();
       setFocusOnSelected(false);
+
+      setTimeout(() => {
+        scrollToParagraph(paragraphs[newIndex]?.id);
+      }, 0);
     },
-    [dec, setFocusOnSelected]
+    [dec, paragraphs, setFocusOnSelected]
   );
   useKeyboardEffect("mod+up", handlePressModUp);
+
+  const handlePressModLeft = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      const newIndex = dec(10);
+      setFocusOnSelected(false);
+
+      setTimeout(() => {
+        scrollToParagraph(paragraphs[newIndex]?.id);
+      }, 0);
+    },
+    [dec, paragraphs, setFocusOnSelected]
+  );
+  useKeyboardEffect("mod+left", handlePressModLeft);
 
   const handlePressModDown = useCallback(
     (e: KeyboardEvent) => {
       e.preventDefault();
-      inc();
+      const newIndex = inc();
       setFocusOnSelected(false);
+
+      setTimeout(() => {
+        scrollToParagraph(paragraphs[newIndex]?.id);
+      }, 0);
     },
-    [inc, setFocusOnSelected]
+    [inc, paragraphs, setFocusOnSelected]
   );
   useKeyboardEffect("mod+down", handlePressModDown);
+
+  const handlePressModRight = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      const newIndex = inc(10);
+      setFocusOnSelected(false);
+
+      setTimeout(() => {
+        scrollToParagraph(paragraphs[newIndex]?.id);
+      }, 0);
+    },
+    [inc, paragraphs, setFocusOnSelected]
+  );
+  useKeyboardEffect("mod+right", handlePressModRight);
+
+  const handlePressEsc = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      setFocusOnSelected(false);
+    },
+    [setFocusOnSelected]
+  );
+  useKeyboardEffect("esc", handlePressEsc);
 
   const handlePressEnter = useCallback(
     (e: KeyboardEvent) => {
@@ -121,8 +184,10 @@ export default function StoriesByIdPage() {
               paragraph={paragraph}
               selected={currentIndex === index}
               focused={currentIndex === index && isFocusOnSelected}
-              onArrowUp={handlePressModUp}
-              onArrowDown={handlePressModDown}
+              onPressArrowUp={handlePressModUp}
+              onPressArrowDown={handlePressModDown}
+              onPressEsc={handlePressEsc}
+              onPressEnter={handlePressModEnter}
             />
           </div>
         ))}
