@@ -1,5 +1,11 @@
 import { FirebaseOptions, initializeApp } from "firebase/app";
 import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  UserCredential,
+} from "firebase/auth";
+import {
   getBlob,
   getDownloadURL,
   getStorage,
@@ -15,6 +21,9 @@ type TFirebaseContentValue = {
     download: (path: string) => Promise<Blob>;
     getDownloadUrl: (path: string) => Promise<string>;
   };
+  auth: {
+    login: () => Promise<UserCredential["user"]>;
+  };
 };
 
 const FirebaseContext = React.createContext<TFirebaseContentValue>({
@@ -29,6 +38,11 @@ const FirebaseContext = React.createContext<TFirebaseContentValue>({
       throw new Error("Not Implemented");
     },
   },
+  auth: {
+    login: () => {
+      throw new Error("Not Implemented");
+    },
+  },
 });
 
 export const FirebaseProvider = ({
@@ -38,6 +52,12 @@ export const FirebaseProvider = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const _app = useMemo(() => initializeApp(config), [config?.apiKey]);
   const _storage = useMemo(() => getStorage(_app), [_app]);
+  const _auth = useMemo(() => {
+    const auth = getAuth(_app);
+    auth.useDeviceLanguage();
+
+    return auth;
+  }, [_app]);
 
   const value: TFirebaseContentValue = useMemo(
     () => ({
@@ -55,8 +75,16 @@ export const FirebaseProvider = ({
           return getDownloadURL(ref);
         },
       },
+      auth: {
+        login: () => {
+          const provider = new GoogleAuthProvider();
+          provider.addScope("https://www.googleapis.com/auth/userinfo.email");
+
+          return signInWithPopup(_auth, provider).then((result) => result.user);
+        },
+      },
     }),
-    [_storage]
+    [_auth, _storage]
   );
 
   return (

@@ -5,8 +5,8 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useState,
 } from "react";
+import { useSessionStorage } from "react-use";
 
 type TAuthContextValueWithoutAction = {
   isLogined: boolean;
@@ -17,7 +17,7 @@ type TAuthContextValueWithoutAction = {
 
 type TAuthContextValue = TAuthContextValueWithoutAction & {
   action: {
-    login: () => Promise<boolean>;
+    login: (args: { provider: string; email: string }) => Promise<boolean>;
     logout: () => Promise<boolean>;
   };
 };
@@ -42,20 +42,25 @@ const authContextDefaultValue: TAuthContextValue = {
 const AuthContext = createContext<TAuthContextValue>(authContextDefaultValue);
 
 export function AuthProvider({ children }: PropsWithChildren): ReactNode {
-  const [valueWithoutAction, setValueWithoutAction] = useState<
+  const [valueWithoutAction, setValueWithoutAction] = useSessionStorage<
     Omit<TAuthContextValue, "action">
-  >(authContextDefaultValue);
+  >("auth-session", authContextDefaultValue);
 
-  const login = useCallback(async () => {
-    setValueWithoutAction({
-      isLogined: true as const,
-      user: {
-        email: "dummyemail@gmail.com",
-      },
-    });
+  const login = useCallback(
+    async (args: { provider: string; email: string }) => {
+      setValueWithoutAction({
+        isLogined: true as const,
+        user: {
+          email: args.email,
+        },
+      });
 
-    return true;
-  }, []);
+      console.log(args);
+
+      return true;
+    },
+    [setValueWithoutAction]
+  );
 
   const logout = useCallback(async () => {
     setValueWithoutAction({
@@ -64,7 +69,7 @@ export function AuthProvider({ children }: PropsWithChildren): ReactNode {
     });
 
     return true;
-  }, []);
+  }, [setValueWithoutAction]);
 
   const value = useMemo(
     () => ({
