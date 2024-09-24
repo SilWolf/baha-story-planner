@@ -12,10 +12,10 @@ import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 
 import styles from "./index.module.css";
 import { MentionNode } from "./nodes/MentionNode";
-import EditablePlugin from "./plugins/EditablePlugin";
 import ControlAndWorkflowPlugin from "./plugins/ControlAndWorkflowPlugin";
+import EditablePlugin from "./plugins/EditablePlugin";
 import MentionPlugin from "./plugins/MentionPlugin";
-import TreeViewPlugin from "./plugins/TreeViewPlugin";
+// import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 const placeholder = "輸入內容…";
 
