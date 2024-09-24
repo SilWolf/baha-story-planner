@@ -7,8 +7,8 @@ import {
 } from "react-use/lib/misc/hookState";
 
 export interface CounterActions {
-  inc: (delta?: number) => void;
-  dec: (delta?: number) => void;
+  inc: (delta?: number, force?: boolean) => number;
+  dec: (delta?: number, force?: boolean) => number;
   get: () => number;
   set: (value: IHookStateSetAction<number>) => void;
   reset: (value?: IHookStateSetAction<number>) => void;
