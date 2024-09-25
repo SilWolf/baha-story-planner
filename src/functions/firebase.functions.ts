@@ -1,6 +1,18 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore/lite";
+import {
+  collection,
+  doc,
+  DocumentData,
+  DocumentSnapshot,
+  getDoc,
+  getDocs,
+  getFirestore,
+  limit,
+  query,
+  setDoc,
+  startAfter,
+} from "firebase/firestore/lite";
 import {
   getBlob,
   getDownloadURL,
@@ -33,7 +45,7 @@ export const bStorageGetDownloadUrl = (path: string) => {
   return getDownloadURL(ref);
 };
 
-export const bUpsertUserByIdentification = async (
+export const bDatabaseUpsertUserByIdentification = async (
   identification: string,
   user: UserSchemaV1
 ) => {
@@ -48,6 +60,30 @@ export const bUpsertUserByIdentification = async (
   return setDoc(doc(_firestore, "users", identification), user).then(
     () => user
   );
+};
+
+export const bDatabaseGetItemsFromCollection = async <T extends DocumentData>(
+  path: string[],
+  pageSize: number,
+  lastSeen?: DocumentSnapshot
+) => {
+  const tempPath = [...path];
+  const pathFirst = tempPath.shift();
+  const documentSnapshots = await getDocs(
+    query(
+      collection(_firestore, pathFirst as string, ...tempPath),
+      startAfter(lastSeen),
+      limit(pageSize)
+    )
+  );
+
+  return {
+    items: documentSnapshots.docs.map((doc) => doc.data()) as T[],
+    pagination: {
+      first: documentSnapshots.docs[0],
+      last: documentSnapshots.docs[documentSnapshots.docs.length - 1],
+    },
+  };
 };
 
 export const bAuthSignIn = async () => {
