@@ -1,27 +1,23 @@
 import { useCallback } from "react";
 import { Button, Card } from "react-daisyui";
 
-import { useAuth } from "@/providers/AuthProvider";
-import { useFirebase } from "@/providers/FirebaseProvider";
+import googleAuthProvider from "@/functions/auth/google.auth";
+import { bUpsertUserByIdentification } from "@/functions/firebase.functions";
+import { useSessionAuth } from "@/providers/SessionAuthProvider";
 
 export default function RootLandingPage() {
-  const {
-    action: { login },
-  } = useAuth();
-  const { auth: firebaseAuth } = useFirebase();
+  const { login } = useSessionAuth();
 
   const handleClickGoogleLogin = useCallback(() => {
-    firebaseAuth.login().then((user) => {
-      if (!user?.email) {
-        return;
-      }
-
-      login({
-        provider: "google",
-        email: user.email,
+    googleAuthProvider.login().then(({ identification, user }) => {
+      bUpsertUserByIdentification(identification, user).then((fetchedUser) => {
+        login({
+          provider: "google",
+          user: fetchedUser,
+        });
       });
     });
-  }, [firebaseAuth, login]);
+  }, [login]);
 
   return (
     <div className="container mx-auto text-center flex items-center justify-center h-screen">

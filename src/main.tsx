@@ -6,10 +6,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { themeChange } from "theme-change";
 
-import firebaseConfig from "@/env/firebase-credentials";
-
-import { AuthProvider } from "./providers/AuthProvider/index.tsx";
-import { FirebaseProvider } from "./providers/FirebaseProvider/index.tsx";
+import { SessionAuthProvider } from "./providers/SessionAuthProvider/index.tsx";
 import router from "./router.tsx";
 
 const queryClient = new QueryClient();
@@ -22,11 +19,9 @@ const Main = () => {
   return (
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <FirebaseProvider config={firebaseConfig}>
-          <AuthProvider>
-            <RouterProvider router={router} />
-          </AuthProvider>
-        </FirebaseProvider>
+        <SessionAuthProvider>
+          <RouterProvider router={router} />
+        </SessionAuthProvider>
       </QueryClientProvider>
     </StrictMode>
   );
